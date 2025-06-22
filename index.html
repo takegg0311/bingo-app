@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ビンゴ抽選器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ビンゴ抽選器</h1>
+        </header>
+        
+        <main>
+            <div class="lottery-area">
+                <div class="current-number">
+                    <h2>現在の番号</h2>
+                    <div id="currentNumber" class="number-display">-</div>
+                    <button id="drawButton" class="draw-button">抽選開始</button>
+                </div>
+            </div>
+            
+            <div class="history-area">
+                <h2>抽選履歴</h2>
+                <div id="historyList" class="history-list">
+                    <p class="no-history">まだ抽選されていません</p>
+                </div>
+                <button id="resetButton" class="reset-button">リセット</button>
+            </div>
+        </main>
+        
+        <footer>
+            <p>01〜75の番号からランダムに抽選します</p>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
