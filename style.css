@@ -190,8 +190,26 @@ footer {
     }
 }
 
+@keyframes spinGlow {
+    0% {
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
+}
+
 .number-appear {
     animation: numberAppear 0.5s ease-out;
+}
+
+.spinning {
+    animation: spinGlow 0.5s ease-in-out infinite;
+    background: linear-gradient(45deg, #f0f0f0, #e0e0e0, #f0f0f0) !important;
+    border-color: #667eea !important;
 }
 
 /* レスポンシブデザイン */

@@ -3,6 +3,7 @@ class BingoLottery {
         this.numbers = Array.from({length: 75}, (_, i) => i + 1); // 01〜75の番号
         this.drawnNumbers = []; // 既に抽選された番号
         this.currentNumber = null;
+        this.isSpinning = false; // ルーレット回転中フラグ
         
         this.currentNumberElement = document.getElementById('currentNumber');
         this.drawButton = document.getElementById('drawButton');
@@ -14,8 +15,83 @@ class BingoLottery {
     }
     
     initializeEventListeners() {
-        this.drawButton.addEventListener('click', () => this.drawNumber());
+        this.drawButton.addEventListener('click', () => this.startRoulette());
         this.resetButton.addEventListener('click', () => this.reset());
+    }
+    
+    startRoulette() {
+        if (this.isSpinning || this.numbers.length === 0) {
+            return;
+        }
+        
+        this.isSpinning = true;
+        this.drawButton.disabled = true;
+        this.drawButton.textContent = '抽選中...';
+        
+        // スピン中の視覚効果を適用
+        this.currentNumberElement.classList.add('spinning');
+        
+        // ルーレットアニメーション開始
+        this.spinRoulette();
+    }
+    
+    spinRoulette() {
+        let duration = 3000; // 3秒間のアニメーション
+        let interval = 50; // 初期間隔（ミリ秒）
+        let elapsed = 0;
+        
+        const spinInterval = setInterval(() => {
+            elapsed += interval;
+            
+            // ランダムな番号を表示（まだ抽選されていない番号から）
+            const availableNumbers = this.numbers.filter(num => !this.drawnNumbers.includes(num));
+            if (availableNumbers.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+                const tempNumber = availableNumbers[randomIndex];
+                this.currentNumberElement.textContent = tempNumber.toString().padStart(2, '0');
+            }
+            
+            // 徐々にスローダウン
+            if (elapsed > duration * 0.7) {
+                interval = Math.min(interval + 20, 200); // 間隔を徐々に長く
+            }
+            
+            // アニメーション終了
+            if (elapsed >= duration) {
+                clearInterval(spinInterval);
+                this.finishRoulette();
+            }
+        }, interval);
+    }
+    
+    finishRoulette() {
+        // 最終的な当選番号を決定
+        const randomIndex = Math.floor(Math.random() * this.numbers.length);
+        const drawnNumber = this.numbers.splice(randomIndex, 1)[0];
+        
+        this.currentNumber = drawnNumber;
+        this.drawnNumbers.push(drawnNumber);
+        
+        // スピン中の視覚効果を削除
+        this.currentNumberElement.classList.remove('spinning');
+        
+        // 最終番号を表示
+        this.currentNumberElement.textContent = drawnNumber.toString().padStart(2, '0');
+        
+        // アニメーション効果
+        this.currentNumberElement.classList.remove('number-appear');
+        void this.currentNumberElement.offsetWidth; // リフロー
+        this.currentNumberElement.classList.add('number-appear');
+        
+        this.updateDisplay();
+        
+        // 状態をリセット
+        this.isSpinning = false;
+        this.drawButton.disabled = this.numbers.length === 0;
+        this.drawButton.textContent = '抽選開始';
+        
+        // 抽選音効果（オプション）
+        this.playDrawSound();
     }
     
     drawNumber() {
@@ -54,8 +130,10 @@ class BingoLottery {
         // 履歴を更新
         this.updateHistory();
         
-        // ボタンの状態を更新
-        this.drawButton.disabled = this.numbers.length === 0;
+        // ボタンの状態を更新（スピン中でない場合のみ）
+        if (!this.isSpinning) {
+            this.drawButton.disabled = this.numbers.length === 0;
+        }
     }
     
     updateHistory() {
@@ -84,7 +162,9 @@ class BingoLottery {
             this.numbers = Array.from({length: 75}, (_, i) => i + 1);
             this.drawnNumbers = [];
             this.currentNumber = null;
+            this.isSpinning = false;
             this.drawButton.disabled = false;
+            this.drawButton.textContent = '抽選開始';
             this.updateDisplay();
         }
     }
