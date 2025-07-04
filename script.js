@@ -11,6 +11,7 @@ class BingoLottery {
         this.historyList = document.getElementById('historyList');
         
         this.initializeEventListeners();
+        this.loadFromStorage(); // localStorageから履歴を読み込み
         this.updateDisplay();
     }
     
@@ -97,6 +98,9 @@ class BingoLottery {
         
         // 抽選音効果（オプション）
         this.playDrawSound();
+        
+        // localStorageに抽選履歴を保存
+        this.saveToStorage();
     }
     
     drawNumber() {
@@ -122,6 +126,9 @@ class BingoLottery {
         
         // 抽選音効果（オプション）
         this.playDrawSound();
+        
+        // localStorageに抽選履歴を保存
+        this.saveToStorage();
     }
     
     updateDisplay() {
@@ -171,6 +178,9 @@ class BingoLottery {
             this.drawButton.disabled = false;
             this.drawButton.textContent = '抽選開始';
             this.updateDisplay();
+            
+            // localStorageを削除
+            this.deleteFromStorage();
         }
     }
     
@@ -181,6 +191,45 @@ class BingoLottery {
         const audio = new Audio('draw-sound.mp3');
         audio.play().catch(e => console.log('音声再生エラー:', e));
         */
+    }
+    
+    // localStorageから抽選履歴を読み込む
+    loadFromStorage() {
+        const storageValue = localStorage.getItem('bingoDrawnNumbers');
+        console.log('抽選履歴 読み込み:', storageValue)
+        if (storageValue) {
+            try {
+                this.drawnNumbers = JSON.parse(storageValue);
+                // 抽選済み番号をnumbers配列から削除
+                this.drawnNumbers.forEach(number => {
+                    const index = this.numbers.indexOf(number);
+                    if (index > -1) {
+                        this.numbers.splice(index, 1);
+                    }
+                });
+                
+                // 最後に抽選された番号を現在の番号として設定
+                if (this.drawnNumbers.length > 0) {
+                    this.currentNumber = this.drawnNumbers[this.drawnNumbers.length - 1];
+                }
+            } catch (e) {
+                console.error('localStorageの読み込みエラー:', e);
+                this.drawnNumbers = [];
+            }
+        }
+    }
+    
+    // localStorageに抽選履歴を保存
+    saveToStorage() {
+        const storageValue = JSON.stringify(this.drawnNumbers);
+        localStorage.setItem('bingoDrawnNumbers', storageValue);
+        console.log("localStorage 保存:", storageValue)
+    }
+    
+    // localStorageから削除
+    deleteFromStorage() {
+        localStorage.removeItem('bingoDrawnNumbers');
+        console.log("localStorage リセット")
     }
 }
 
