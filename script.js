@@ -36,9 +36,14 @@ class BingoLottery {
     }
     
     spinRoulette() {
-        let duration = 3000; // 3秒間のアニメーション
-        let interval = 50; // 初期間隔（ミリ秒）
+        // 設定値を取得
+        const config = window.BINGO_CONFIG || {};
+        let duration = config.DURATION ?? 3000;
+        let interval = config.INTERVAL ?? 50;
         let elapsed = 0;
+        const slowdownStart = config.SLOWDOWN_START ?? 0.7;
+        const slowdownStep = config.SLOWDOWN_STEP ?? 20;
+        const slowdownMax = config.SLOWDOWN_MAX ?? 200;
         
         const spinInterval = setInterval(() => {
             elapsed += interval;
@@ -52,8 +57,8 @@ class BingoLottery {
             }
             
             // 徐々にスローダウン
-            if (elapsed > duration * 0.7) {
-                interval = Math.min(interval + 20, 200); // 間隔を徐々に長く
+            if (elapsed > duration * slowdownStart) {
+                interval = Math.min(interval + slowdownStep, slowdownMax); // 間隔を徐々に長く
             }
             
             // アニメーション終了
