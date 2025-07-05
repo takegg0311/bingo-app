@@ -10,6 +10,7 @@
     <div class="container">
         <header>
             <h1>ビンゴ抽選器</h1>
+            <button id="settingsButton" class="settings-button">⚙️ 設定</button>
         </header>
         
         <main>
@@ -34,7 +35,44 @@
             <p>01〜75の番号からランダムに抽選します</p>
         </footer>
     </div>
+
+    <!-- 設定モーダル -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>設定</h2>
+                <button id="closeSettings" class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label for="duration">アニメーション時間 (ミリ秒):</label>
+                    <input type="number" id="duration" min="1000" max="10000" step="100">
+                </div>
+                <div class="setting-group">
+                    <label for="interval">初期間隔 (ミリ秒):</label>
+                    <input type="number" id="interval" min="10" max="200" step="10">
+                </div>
+                <div class="setting-group">
+                    <label for="slowdownStart">スローダウン開始タイミング (0.0-1.0):</label>
+                    <input type="number" id="slowdownStart" min="0.1" max="0.9" step="0.1">
+                </div>
+                <div class="setting-group">
+                    <label for="slowdownStep">スローダウン増加量 (ミリ秒):</label>
+                    <input type="number" id="slowdownStep" min="5" max="50" step="5">
+                </div>
+                <div class="setting-group">
+                    <label for="slowdownMax">最大インターバル (ミリ秒):</label>
+                    <input type="number" id="slowdownMax" min="100" max="500" step="50">
+                </div>
+                <div class="setting-actions">
+                    <button id="resetSettings" class="reset-settings-button">デフォルトに戻す</button>
+                    <button id="saveSettings" class="save-settings-button">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
+    <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
