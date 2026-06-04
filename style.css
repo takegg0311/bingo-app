@@ -267,8 +267,8 @@ footer {
 
 .overview-grid {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 8px;
     margin-bottom: 30px;
 }
 
@@ -278,7 +278,7 @@ footer {
     align-items: center;
     justify-content: center;
     border-radius: 12px;
-    font-size: clamp(1rem, 2vw, 1.6rem);
+    font-size: clamp(1rem, 3.5vw, 2.4rem);
     font-weight: bold;
     background: #f0f0f0;
     color: #555;
