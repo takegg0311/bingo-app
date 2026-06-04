@@ -9,6 +9,15 @@ class BingoLottery {
         this.drawButton = document.getElementById('drawButton');
         this.resetButton = document.getElementById('resetButton');
         this.historyList = document.getElementById('historyList');
+
+        // タブ・全体画面関連の要素
+        this.tabHistory = document.getElementById('tabHistory');
+        this.tabOverview = document.getElementById('tabOverview');
+        this.viewHistory = document.getElementById('viewHistory');
+        this.viewOverview = document.getElementById('viewOverview');
+        this.overviewGrid = document.getElementById('overviewGrid');
+        this.overviewStats = document.getElementById('overviewStats');
+        this.resetButtonOverview = document.getElementById('resetButtonOverview');
         
         // 設定関連の要素
         this.settingsButton = document.getElementById('settingsButton');
@@ -25,14 +34,20 @@ class BingoLottery {
         this.slowdownMaxInput = document.getElementById('slowdownMax');
         
         this.initializeEventListeners();
-        this.loadFromStorage(); // localStorageから履歴を読み込み
-        this.loadSettings(); // 設定を読み込み
+        this.loadFromStorage();
+        this.loadSettings();
         this.updateDisplay();
+        this.buildOverviewGrid();
     }
     
     initializeEventListeners() {
         this.drawButton.addEventListener('click', () => this.startRoulette());
         this.resetButton.addEventListener('click', () => this.reset());
+        this.resetButtonOverview.addEventListener('click', () => this.reset());
+
+        // タブ切替
+        this.tabHistory.addEventListener('click', () => this.switchTab('history'));
+        this.tabOverview.addEventListener('click', () => this.switchTab('overview'));
         
         // 設定関連のイベントリスナー
         this.settingsButton.addEventListener('click', () => this.openSettings());
@@ -244,17 +259,15 @@ class BingoLottery {
     }
     
     updateDisplay() {
-        // 現在の番号を表示
         if (this.currentNumber) {
             this.currentNumberElement.textContent = this.currentNumber.toString().padStart(2, '0');
         } else {
             this.currentNumberElement.textContent = '-';
         }
-        
-        // 履歴を更新
+
         this.updateHistory();
-        
-        // ボタンの状態を更新（スピン中でない場合のみ）
+        this.updateOverviewGrid();
+
         if (!this.isSpinning) {
             this.drawButton.disabled = this.numbers.length === 0;
         }
@@ -290,9 +303,54 @@ class BingoLottery {
             this.drawButton.disabled = false;
             this.drawButton.textContent = '抽選開始';
             this.updateDisplay();
-            
-            // localStorageを削除
             this.deleteFromStorage();
+        }
+    }
+
+    switchTab(tab) {
+        if (tab === 'history') {
+            this.viewHistory.classList.remove('view-hidden');
+            this.viewOverview.classList.add('view-hidden');
+            this.tabHistory.classList.add('tab-active');
+            this.tabOverview.classList.remove('tab-active');
+        } else {
+            this.viewHistory.classList.add('view-hidden');
+            this.viewOverview.classList.remove('view-hidden');
+            this.tabHistory.classList.remove('tab-active');
+            this.tabOverview.classList.add('tab-active');
+        }
+    }
+
+    buildOverviewGrid() {
+        this.overviewGrid.innerHTML = '';
+        for (let i = 1; i <= 75; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'overview-cell';
+            cell.id = `cell-${i}`;
+            cell.textContent = i.toString().padStart(2, '0');
+            this.overviewGrid.appendChild(cell);
+        }
+        this.updateOverviewGrid();
+    }
+
+    updateOverviewGrid() {
+        if (!this.overviewGrid) return;
+        for (let i = 1; i <= 75; i++) {
+            const cell = document.getElementById(`cell-${i}`);
+            if (!cell) continue;
+            if (this.drawnNumbers.includes(i)) {
+                cell.classList.add('overview-cell-drawn');
+                if (i === this.currentNumber) {
+                    cell.classList.add('overview-cell-latest');
+                } else {
+                    cell.classList.remove('overview-cell-latest');
+                }
+            } else {
+                cell.classList.remove('overview-cell-drawn', 'overview-cell-latest');
+            }
+        }
+        if (this.overviewStats) {
+            this.overviewStats.textContent = `抽選済み：${this.drawnNumbers.length} / 75`;
         }
     }
     
